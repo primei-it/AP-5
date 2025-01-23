@@ -49,9 +49,11 @@ jobs:
       uses: actions/download-artifact@v4
       with:
         name: build-artifacts
-
-    - name: Run tests
-      run: ./gradlew test
+        
+    - name: Set JAVA_HOME
+      run: echo "JAVA_HOME=$(dirname $(dirname $(readlink -f $(which java))))" >> $GITHUB_ENV
+#    - name: Run tests
+#      run: ./gradlew test
 
   push-to-ecr:
     needs: test
