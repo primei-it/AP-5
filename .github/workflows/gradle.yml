@@ -31,6 +31,13 @@ jobs:
     - name: Build with Gradle
       run: ./gradlew build
 
+  test:
+    runs-on: self-hosted
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
   push-to-ecr:
     needs: build  # Job zależy od zakończenia jobu "build"
     runs-on: self-hosted
