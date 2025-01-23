@@ -49,7 +49,7 @@ jobs:
       uses: actions/download-artifact@v4
       with:
         name: build-artifacts
-        
+
     - name: Set JAVA_HOME
       run: echo "JAVA_HOME=$(dirname $(dirname $(readlink -f $(which java))))" >> $GITHUB_ENV
 #    - name: Run tests
@@ -77,10 +77,10 @@ jobs:
 
     - name: Build Docker image
       run: |
-        IMAGE_URI=<AWS_ACCOUNT_ID>.dkr.ecr.<AWS_REGION>.amazonaws.com/ap-5
+        IMAGE_URI=${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/ap-5
         docker build -t $IMAGE_URI .
 
     - name: Push Docker image to Amazon ECR
       run: |
-        IMAGE_URI=<AWS_ACCOUNT_ID>.dkr.ecr.<AWS_REGION>.amazonaws.com/ap-5
+        IMAGE_URI=${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/ap-5
         docker push $IMAGE_URI
