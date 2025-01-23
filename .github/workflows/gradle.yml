@@ -30,8 +30,5 @@ jobs:
 
     - name: Build with Gradle
       run: ./gradlew build
-    
-    - name: Install docker 
-      run: sudo apt-get install docker
 
     
