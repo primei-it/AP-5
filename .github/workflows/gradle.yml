@@ -31,4 +31,26 @@ jobs:
     - name: Build with Gradle
       run: ./gradlew build
 
-    
+  push-to-ecr:
+    needs: build  # Job zależy od zakończenia jobu "build"
+    runs-on: self-hosted
+
+    steps:
+    - name: Download build artifacts
+      uses: actions/download-artifact@v3
+      with:
+        name: build-artifacts
+
+    - name: Authenticate to Amazon ECR
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v1
+
+    - name: Build Docker image
+      run: |
+        IMAGE_URI=<AWS_ACCOUNT_ID>.dkr.ecr.<REGION>.amazonaws.com/<REPOSITORY_NAME>
+        docker build -t $IMAGE_URI .
+
+    - name: Push Docker image to Amazon ECR
+      run: |
+        IMAGE_URI=<AWS_ACCOUNT_ID>.dkr.ecr.<REGION>.amazonaws.com/<REPOSITORY_NAME>
+        docker push $IMAGE_URI
