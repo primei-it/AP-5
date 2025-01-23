@@ -33,13 +33,14 @@ jobs:
 
   test:
     runs-on: self-hosted
+    needs: build 
 
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
 
   push-to-ecr:
-    needs: build  # Job zależy od zakończenia jobu "build"
+    needs: test  # Job zależy od zakończenia jobu "build"
     runs-on: self-hosted
 
     steps:
