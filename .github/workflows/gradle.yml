@@ -70,7 +70,7 @@ jobs:
 
       - name: Build Docker image
         run: |
-          IMAGE_URI=${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/ap-5
+          IMAGE_URI=${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ env.REPOSITORY_NAME }}
           docker build -t $IMAGE_URI -f Dockerfile .
 ##TODO wrzucić variable ap-5 jako zmienna środowiskowa
       - name: Upload Docker image as artifact
