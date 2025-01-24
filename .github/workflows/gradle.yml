@@ -142,13 +142,8 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: docker-image
-      
+
       - name: Push Docker image to Amazon ECR
         run: |
-          IMAGE_URI=${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ env.REPOSITORY_NAME }}
-          echo "Pushing Docker image to ECR: $IMAGE_URI"
-          docker push $IMAGE_URI
-      #- name: Push Docker image to Amazon ECR
-      #  run: |
-      #    IMAGE_URI=${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ vars.REPOSITORY_NAME }}
-      #    docker push $IMAGE_URI
+          IMAGE_URI=${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/ap-5:v1.0.0
+          docker tag ap-5:latest $IMAGE_URI
