@@ -70,7 +70,7 @@ jobs:
 
       - name: Build Docker image
         run: |
-          IMAGE_URI=${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.REPOSITORY_NAME }}
+          IMAGE_URI=${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ vars.REPOSITORY_NAME }}
           docker build -t $IMAGE_URI -f Dockerfile .
 
       - name: Upload Docker image as artifact
@@ -145,5 +145,5 @@ jobs:
 
       - name: Push Docker image to Amazon ECR
         run: |
-          IMAGE_URI=${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/ap-5
+          IMAGE_URI=${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ vars.REPOSITORY_NAME }}
           docker push $IMAGE_URI
