@@ -145,5 +145,5 @@ jobs:
 
       - name: Push Docker image to Amazon ECR
         run: |
-          IMAGE_URI=${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ vars.REPOSITORY_NAME }}
+          IMAGE_URI=${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/ap-5
           docker push $IMAGE_URI
