@@ -72,7 +72,7 @@ jobs:
         run: |
           IMAGE_URI=${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/ap-5
           docker build -t $IMAGE_URI -f Dockerfile .
-
+##TODO wrzucić variable ap-5 jako zmienna środowiskowa
       - name: Upload Docker image as artifact
         uses: actions/upload-artifact@v4
         with:
