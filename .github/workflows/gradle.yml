@@ -149,7 +149,7 @@ jobs:
 
       - name: Show ECR repositories
         run: |
-          aws ecr-public describe-repositories --region us-east-1
+          aws ecr-public describe-repositories --region us-east-1 --output table
 
       - name: Push Docker image to Amazon ECR
         run: |
