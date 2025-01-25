@@ -149,7 +149,7 @@ jobs:
 
       - name: Push Docker image to Amazon ECR
         run: |
-          aws ecr create-repository --repository-name ap-5 --region ${{ vars.REPOSITORY_NAME }}
+          aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws/d3d9m8w4
         
       - name: Download Docker image artifact
         uses: actions/download-artifact@v4
