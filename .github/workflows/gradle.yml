@@ -147,9 +147,17 @@ jobs:
       - name: Run which AWS CLI
         run: which aws
 
+      - name: Show ECR repositories
+        run: |
+          aws ecr-public describe-repositories --region us-east-1
+
       - name: Push Docker image to Amazon ECR
         run: |
-          aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws/d3d9m8w4
+          aws ecr get-login-password --region us-east-1
+
+      - name: Push Docker image to Amazon ECR
+        run: |
+          aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws/d3d9m8w4/ap-5
         
       - name: Download Docker image artifact
         uses: actions/download-artifact@v4
