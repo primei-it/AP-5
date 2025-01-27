@@ -165,11 +165,10 @@ jobs:
 #      - name: Push Docker image to Amazon ECR
 #        run: |
 #          aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws/d3d9m8w4/ap-5
-      - name: Push Docker image to Amazon ECR
+      - name: AWS ECR auth image to Amazon ECR
         run: |
           aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws/d3d9m8w4
 
       - name: Push Docker image to Amazon ECR
         run: |
-          IMAGE_URI=${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ vars.REPOSITORY_NAME }}
-          docker push $IMAGE_URI
+          docker push public.ecr.aws/d3d9m8w4/ap-5:latest
