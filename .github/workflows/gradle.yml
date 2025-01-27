@@ -161,10 +161,14 @@ jobs:
           aws sts get-caller-identity
           aws ecr-public describe-repositories --region us-east-1
 
+#Problem Error response from daemon: login attempt to https://public.ecr.aws/v2/ failed with status: 403 Forbidden
+#      - name: Push Docker image to Amazon ECR
+#        run: |
+#          aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws/d3d9m8w4/ap-5
       - name: Push Docker image to Amazon ECR
         run: |
-          aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws/d3d9m8w4/ap-5
-        
+          aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws/d3d9m8w4
+          
       - name: Download Docker image artifact
         uses: actions/download-artifact@v4
         with:
