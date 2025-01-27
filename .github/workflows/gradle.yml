@@ -75,8 +75,8 @@ jobs:
 ##TODO wrzucić variable ap-5 jako zmienna środowiskowa
       - name: URL Identify Docker image
         run: |
-          # Definiowanie URI obrazu
           IMAGE_URI=public.ecr.aws/d3d9m8w4/${{ vars.REPOSITORY_NAME }}:latest
+          echo "IMAGE_URI=$IMAGE_URI" >> $GITHUB_ENV
           
           # Budowanie obrazu Docker z wykorzystaniem Dockerfile
           docker build -t $IMAGE_URI -f Dockerfile .
