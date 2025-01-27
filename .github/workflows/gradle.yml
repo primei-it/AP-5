@@ -151,7 +151,7 @@ jobs:
         run: |
           aws ecr-public describe-repositories --region us-east-1 --output table
 
-      - name: Push Docker image to Amazon ECR
+      - name: Check ECR password image to Amazon ECR
         run: |
           aws ecr get-login-password --region us-east-1
 
