@@ -68,16 +68,30 @@ jobs:
         with:
           name: build-artifacts
 
-      - name: Build Docker image
-        run: |
-          IMAGE_URI=${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ vars.REPOSITORY_NAME }}
-          docker build -t $IMAGE_URI -f Dockerfile .
+#      - name: Build Docker image
+#        run: |
+#          IMAGE_URI=${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ vars.REPOSITORY_NAME }}
+#          docker build -t $IMAGE_URI -f Dockerfile .
 ##TODO wrzucić variable ap-5 jako zmienna środowiskowa
+      - name: URL Identify Docker image
+        run: |
+          # Definiowanie URI obrazu
+          IMAGE_URI=public.ecr.aws/d3d9m8w4/${{ vars.REPOSITORY_NAME }}:latest
+          
+          # Budowanie obrazu Docker z wykorzystaniem Dockerfile
+          docker build -t $IMAGE_URI -f Dockerfile .
+
+      - name: Tag Docker image
+        run: |
+          # Tagowanie obrazu dla publicznego rejestru ECR
+          docker tag $IMAGE_URI public.ecr.aws/d3d9m8w4/${{ vars.REPOSITORY_NAME }}:latest
+
       - name: Upload Docker image as artifact
         uses: actions/upload-artifact@v4
         with:
           name: docker-image
           path: .
+
       
   
   docker-test:
@@ -171,4 +185,4 @@ jobs:
 
       - name: Push Docker image to Amazon ECR
         run: |
-          docker push public.ecr.aws/d3d9m8w4/ap-5:latest
+          docker push $IMAGE_URI
