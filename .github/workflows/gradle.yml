@@ -81,10 +81,10 @@ jobs:
           # Budowanie obrazu Docker z wykorzystaniem Dockerfile
           docker build -t $IMAGE_URI -f Dockerfile .
 # Was tagged ? 
- #     - name: Tag Docker image
- #       run: |
- #         # Tagowanie obrazu dla publicznego rejestru ECR
- #         docker tag $IMAGE_URI public.ecr.aws/d3d9m8w4/${{ vars.REPOSITORY_NAME }}:latest
+      - name: Tag Docker image
+        run: |
+          # Tagowanie obrazu dla publicznego rejestru ECR
+          docker tag $IMAGE_URI public.ecr.aws/d3d9m8w4/${{ vars.REPOSITORY_NAME }}:latest
 
       - name: Upload Docker image as artifact
         uses: actions/upload-artifact@v4
