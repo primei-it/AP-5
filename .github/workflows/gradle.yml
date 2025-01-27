@@ -155,6 +155,12 @@ jobs:
         run: |
           aws ecr get-login-password --region us-east-1
 
+      - name: Debug AWS Credentials
+        run: |
+          echo "AWS Region: ${{ secrets.AWS_REGION }}"
+          aws sts get-caller-identity
+          aws ecr-public describe-repositories --region us-east-1
+
       - name: Push Docker image to Amazon ECR
         run: |
           aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws/d3d9m8w4/ap-5
