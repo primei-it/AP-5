@@ -2,13 +2,10 @@ version: '3.8'
 
 services:
   app:
-    image: openjdk:21-jdk-slim
+    image: public.ecr.aws/d3d9m8w4/ap-5:latest  # Używa najnowszego obrazu z publicznego ECR
     container_name: AP-5
-    build:
-      context: .
-      dockerfile: Dockerfile
     ports:
       - "8080:8080"
-    volumes:
-      - .:/app
-    command: ./gradlew bootRun
+    environment:
+      - JAVA_OPTS=-Xmx512m
+    restart: always
