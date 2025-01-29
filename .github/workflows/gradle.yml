@@ -188,7 +188,7 @@ jobs:
         run: |
           docker image ls
       
-      - name: Push Docker image to Amazon ECR
+      - name: Push Docker image to Amazon ECR 
         run: |
             run: |
               IMAGE_URI="public.ecr.aws/d3d9m8w4/${{ vars.REPOSITORY_NAME }}:latest"
