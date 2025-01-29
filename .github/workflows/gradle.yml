@@ -190,7 +190,7 @@ jobs:
 
       - name: Docker push help
         run: |
-          docker push --help
+          docker push public.ecr.aws/d3d9m8w4/ap-5L:latest
 
       - name: Push Docker image to Amazon ECR
         run: |
