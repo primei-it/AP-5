@@ -186,7 +186,7 @@ jobs:
         
       - name: Docker list images
         run: |
-          docker images ls
+          docker image ls
       
       - name: Push Docker image to Amazon ECR
         run: |
