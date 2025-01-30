@@ -155,12 +155,12 @@ jobs:
         run: |
           docker image ls
       
-      - name: Push Docker image to Amazon ECR 
-        run: |
-            run: |
-              IMAGE_URI="public.ecr.aws/d3d9m8w4/${{ vars.REPOSITORY_NAME }}:latest"
-              docker push $IMAGE_URI
+      - name: Set IMAGE_URI
+        run: echo "IMAGE_URI=public.ecr.aws/d3d9m8w4/${{ vars.REPOSITORY_NAME }}:latest" >> $GITHUB_ENV
 
+      - name: Display IMAGE_URI
+        run: echo "$IMAGE_URI"
+  
       - name: Push Docker image to Amazon ECR
         run: |
             run: |
