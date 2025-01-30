@@ -68,10 +68,6 @@ jobs:
         with:
           name: build-artifacts
 
-#      - name: Build Docker image
-#        run: |
-#          IMAGE_URI=${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ vars.REPOSITORY_NAME }}
-#          docker build -t $IMAGE_URI -f Dockerfile .
 ##TODO wrzucić variable ap-5 jako zmienna środowiskowa
       - name: URL Identify Docker image
         run: |
@@ -107,35 +103,6 @@ jobs:
           with:
             name: docker-image
         #Todo zaplanować testy
-###
-  #push-to-ecr:
-  #  needs: test
-  #  runs-on: self-hosted
-
-  #  steps:
-  #    - name: Checkout repository
-  #      uses: actions/checkout@v4
-
-  #    - name: Download build artifacts
-  #      uses: actions/download-artifact@v4
-  #      with:
-  #        name: build-artifacts
-
-  #    - name: Configure AWS credentials
-  #      uses: aws-actions/configure-aws-credentials@v4
-  #      with:
-  #        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-  #        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-  #        aws-region: us-east-1
-
-  #    - name: Add Docker to PATH
-  #      run: echo "/usr/bin" >> $GITHUB_PATH
-
-  #    - name: Verify Docker installation
-  #      run: docker --version
-
-  #    - name: Verify Docker installation
-  #      run: which docker
 
   docker-push:
     needs: docker-test
@@ -154,12 +121,12 @@ jobs:
       
       - name: Add AWS CLI to PATH
         run: echo "/usr/local/bin" >> $GITHUB_PATH 
-      ###
+
       - name: Download Docker image artifact
         uses: actions/download-artifact@v4
         with:
           name: docker-image
-      ###
+
       - name: Run AWS CLI version
         run: aws --version
 
