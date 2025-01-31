@@ -1,4 +1,4 @@
-package pl.suchaszama.ap5;
+package it.primei;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;

@@ -1,4 +1,4 @@
-package pl.suchaszama.ap5;
+package it.primei;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
