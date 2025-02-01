@@ -8,10 +8,10 @@ WORKDIR /app
 COPY . .
 
 # Instalujemy Gradle Wrapper
-RUN ./gradlew wrapper
 
+# Download previously built artifact from "build" task (GitHub Actions)
+COPY build/libs/AP-5-0.0.1-SNAPSHOT.jar /app/app.jar
 # Budujemy projekt z wykorzystaniem Gradle
-RUN ./gradlew build
 
 # Ustawiamy domyślną komendę uruchamiającą aplikację
-CMD ["java", "-jar", "build/libs/AP-5-0.0.1-SNAPSHOT.jar"]
+CMD ["java", "-jar", "/app/app.jar"]
