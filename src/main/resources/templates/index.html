@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pl" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,108 +12,143 @@
         <h1 class="text-3xl font-bold">AP-5 Project</h1>
     </div>
 </header>
+
 <main class="flex-grow container mx-auto mt-8 p-4">
     <section class="bg-gray-800 rounded-lg shadow-lg p-6">
-        <h2 class="text-2xl font-semibold mb-4 text-blue-400">Hello! 👋</h2>
-        <p class="text-gray-300 mb-4" th:text="${message}">...</p>
+        <h2 class="text-2xl font-semibold mb-4 text-blue-400">Welcome! 👋</h2>
+        <p class="text-gray-300 mb-4" th:text="${message}">This is your AP-5 project interface.</p>
     </section>
 
     <section class="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Amazon Connect CCP -->
         <div class="bg-gray-800 rounded-lg shadow-lg p-6">
-            <h3 class="text-xl font-semibold mb-2 text-blue-400">AWS Connect</h3>
+            <h3 class="text-xl font-semibold mb-2 text-blue-400">Amazon Connect CCP</h3>
             <div id="containerDiv" style="width: 100%; height: 500px;"></div>
         </div>
 
+        <!-- Chat Widget -->
         <div class="bg-gray-800 rounded-lg shadow-lg p-6">
-            <h3 class="text-xl font-semibold mb-2 text-blue-400">Send message</h3>
-            <form id="messageForm" class="flex flex-col space-y-4">
-                <textarea id="messageInput" rows="4" placeholder="..."
-                          class="p-2 bg-gray-700 text-white rounded"></textarea>
-                <button type="submit"
-                        class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition duration-300">
-                    Send message
-                </button>
-            </form>
+            <h3 class="text-xl font-semibold mb-2 text-blue-400">Chat with an Agent</h3>
+            <div id="chatWidget" style="width: 100%; height: 500px; overflow-y: auto; border: 1px solid #4A5568; padding: 10px;"></div>
+            <div class="mt-4 flex">
+                <input id="userMessage" type="text" placeholder="Type your message..."
+                       class="flex-grow bg-gray-700 text-gray-300 px-4 py-2 rounded-l focus:outline-none">
+                <button id="sendMessageButton"
+                        class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-r transition duration-300">Send</button>
+            </div>
         </div>
     </section>
 </main>
 
+<!-- Amazon Connect Streams and ChatJS Libraries -->
 <script src="https://amazon-connect.github.io/amazon-connect-streams/release/connect-streams.js"></script>
+<script src="https://unpkg.com/amazon-connect-chatjs@1.5.1"></script>
+
+<script type="text/javascript">
+    (function(w, d, x, id){
+        s=d.createElement('script');
+        s.src='https://d1ddlw7p7j6hta.cloudfront.net/amazon-connect-chat-interface-client.js';
+        s.async=1;
+        s.id=id;
+        d.getElementsByTagName('head')[0].appendChild(s);
+        w[x] =  w[x] || function() { (w[x].ac = w[x].ac || []).push(arguments) };
+    })(window, document, 'amazon_connect', '4c783089-3faa-4389-97f4-c85252349164');
+    amazon_connect('styles', { iconType: 'CHAT', openChat: { color: '#ffffff', backgroundColor: '#123456' }, closeChat: { color: '#ffffff', backgroundColor: '#123456'} });
+    amazon_connect('snippetId', 'QVFJREFIZ2ZySXd1eE1EWFNRRkRQSWFXZjRvaGxjT0xmd1pOWWViVU4vd0hnZnByS1FGcjFaRmFqUXM0eUtlQWtSWGZjQWpYQUFBQWJqQnNCZ2txaGtpRzl3MEJCd2FnWHpCZEFnRUFNRmdHQ1NxR1NJYjNEUUVIQVRBZUJnbGdoa2dCWlFNRUFTNHdFUVFNM0lneWs4OFFrLzk0ek4wVkFnRVFnQ3N3a295NmlpU3VDZlhla3NtUjlCS2xzK1V5TU12WlczRHVNcUE3SW9xOEp5NkFKZXJESVpVV1NkSi86OmRWbzhBVEtmRHJmelNacEJRR1BzMGtlYjgxYW1sVXg5Ri9wcmVEZEZaMWRMZFZodFIwNUNLcTF5OTk3ak43cXJ0L0VuOUIvR0c3WkFUeDRMQXM1d00vYXRzQTJFK04yNmtCK3FUNmFHM2R1VlZaSTRMSEJqRmU3YmJqbzZwS0xVbk05Qi9xdVNERHduSWVLWGVaV3RMRmpScWI3aThYbz0=');
+    amazon_connect('supportedMessagingContentTypes', [ 'text/plain', 'text/markdown', 'application/vnd.amazonaws.connect.message.interactive', 'application/vnd.amazonaws.connect.message.interactive.response' ]);
+</script>
+
 <script th:inline="javascript">
-    var ccpUrl = /*[[${ccpUrl}]]*/ 'defaultUrl';
+    document.addEventListener('DOMContentLoaded', async () => {
+        var ccpUrl = /*[[${ccpUrl}]]*/ 'defaultUrl';
+        console.log("CCP URL initialized:", ccpUrl);
 
-    try {
-        connect.core.initCCP(document.getElementById("containerDiv"), {
-            ccpUrl: ccpUrl,
-            loginPopup: true,
-            softphone: {
-                allowFramedSoftphone: true
-            }
-        });
+        const region = 'eu-central-1'; // Replace with your AWS region
+        const chatContainer = document.getElementById("chatWidget");
+        const userMessageInput = document.getElementById("userMessage");
+        const sendMessageButton = document.getElementById("sendMessageButton");
 
-        connect.agent(function (agent) {
-            agent.onStateChange(function (agentState) {
-                console.log("Agent status:", agentState.newState);
-            });
-        });
-
-        connect.contact(function (contact) {
-            console.log("Contact:", contact);
-
-            contact.onConnected(function () {
-                console.log("Contact connected.");
-                sendMessageToAgent(contact, "Hello! This is a test message.");
-            });
-
-            contact.onMessage(function (message) {
-                console.log("Received a message from the agent:", message)
-            });
-
-            contact.onEnded(function () {
-                console.log("Contact ended.");
-            });
-
-            const form = document.getElementById("messageForm");
-            form.addEventListener("submit", function (event) {
-                event.preventDefault();
-                const messageInput = document.getElementById("messageInput");
-                const message = messageInput.value.trim();
-
-                if (message) {
-                    sendMessageToAgent(contact, message);
-                    messageInput.value = "";
-                } else {
-                    alert("Enter a message before sending.");
+        try {
+            // Initialize Amazon Connect CCP (Streams)
+            connect.core.initCCP(document.getElementById("containerDiv"), {
+                ccpUrl: ccpUrl,
+                loginPopup: true,
+                softphone: {
+                    allowFramedSoftphone: true
                 }
             });
-        });
 
-    } catch (e) {
-        console.error("Failed to initialize CCP:", e);
-    }
+            console.log("CCP initialized successfully");
 
-    function sendMessageToAgent(contact, message) {
-        if (contact.isChat()) {
-            contact.sendMessage({
-                message: message,
-                contentType: "text/plain"
-            }, {
-                success: function () {
-                    console.log("Message sent:", message);
+            // Configure ChatJS
+            connect.ChatSession.setGlobalConfig({
+                loggerConfig: {
+                    useDefaultLogger: true,
+                    level: connect.LogLevel.INFO,
                 },
-                failure: function (error) {
-                    console.error("Error:", error);
-                }
+                region: region,
             });
-        } else {
-            console.warn("Contact does not support chat.");
+
+            // Function to start a chat session
+            async function startChat(contactId, participantId, participantToken) {
+                const chatSession = connect.ChatSession.create({
+                    chatDetails: {
+                        contactId: contactId,
+                        participantId: participantId,
+                        participantToken: participantToken,
+                    },
+                    type: connect.ChatSession.SessionTypes.CUSTOMER,
+                });
+
+                chatSession.onMessage((event) => {
+                    const message = event.data.Content;
+                    console.log("New message:", message);
+                    displayMessage(message, "agent");
+                });
+
+                chatSession.onEnded(() => {
+                    console.log("Chat session ended.");
+                    displayMessage("Chat session has ended.", "system");
+                });
+
+                await chatSession.connect();
+                console.log("Connected to chat session.");
+
+                // Send user messages to the agent
+                sendMessageButton.addEventListener('click', () => {
+                    const userMessage = userMessageInput.value.trim();
+                    if (userMessage) {
+                        chatSession.sendMessage({ contentType: "text/plain", message: userMessage });
+                        displayMessage(userMessage, "user");
+                        userMessageInput.value = ""; // Clear input field
+                    }
+                });
+            }
+
+            // Example call to startChat (replace with real data from backend)
+            const exampleContactId = "example-contact-id";
+            const exampleParticipantId = "example-participant-id";
+            const exampleParticipantToken = "example-participant-token";
+            await startChat(exampleContactId, exampleParticipantId, exampleParticipantToken);
+
+        } catch (e) {
+            console.error("Initialization error:", e);
         }
-    }
+
+        // Function to display messages in the chat widget
+        function displayMessage(message, sender) {
+            const messageElement = document.createElement("div");
+            messageElement.textContent = sender === "user" ? `You: ${message}` : sender === "agent" ? `Agent: ${message}` : message;
+            messageElement.className = sender === "user" ? "text-blue-400 mb-2" : sender === "agent" ? "text-green-400 mb-2" : "text-yellow-400 mb-2";
+            chatContainer.appendChild(messageElement);
+            chatContainer.scrollTop = chatContainer.scrollHeight; // Auto-scroll to the bottom
+        }
+    });
 </script>
 
 <footer class="bg-gray-800 text-gray-300 mt-auto py-4 border-t border-gray-700">
     <div class="container mx-auto text-center">
-        <p>&copy; <span th:text="${#dates.year(#dates.createNow())}">2025</span> Created by Prime Intelligence</p>
+        <p>&copy; 2025 Created by Prime Intelligence</p>
     </div>
 </footer>
 </body>
