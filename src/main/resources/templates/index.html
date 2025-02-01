@@ -1,133 +1,113 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="pl" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AP-5 Project</title>
     <link rel="stylesheet" th:href="@{/css/output.css}">
 </head>
-<body class="flex flex-col min-h-screen bg-gray-900 text-gray-100 font-sans" onload="init()">
+<body class="flex flex-col min-h-screen bg-gray-900 text-gray-100 font-sans">
 <header class="bg-gray-800 text-white p-4">
     <div class="container mx-auto">
         <h1 class="text-3xl font-bold">AP-5 Project</h1>
     </div>
 </header>
 <main class="flex-grow container mx-auto mt-8 p-4">
-    <!-- Welcome Section -->
     <section class="bg-gray-800 rounded-lg shadow-lg p-6">
         <h2 class="text-2xl font-semibold mb-4 text-blue-400">Hello! 👋</h2>
-        <p class="text-gray-300 mb-4" th:text="${message}">Welcome to the AP-5 Project!</p>
+        <p class="text-gray-300 mb-4" th:text="${message}">...</p>
     </section>
 
-    <!-- AWS Connect Section -->
     <section class="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
-        <!-- CCP (Contact Control Panel) Section -->
         <div class="bg-gray-800 rounded-lg shadow-lg p-6">
             <h3 class="text-xl font-semibold mb-2 text-blue-400">AWS Connect</h3>
             <div id="containerDiv" style="width: 100%; height: 500px;"></div>
         </div>
 
-        <!-- Chat Section -->
         <div class="bg-gray-800 rounded-lg shadow-lg p-6">
-            <h3 class="text-xl font-semibold mb-2 text-blue-400">Start Chat</h3>
-            <button
-                    id="startChatButton"
-                    class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition duration-300"
-                    onclick="startChat()">
-                Start Chat with Agent
-            </button>
-            <!-- Chat Widget Container -->
-            <div id="chatWidgetContainer" style="display: none; margin-top: 20px;">
-                <iframe id="chatWidget" style="width: 100%; height: 400px; border: none;"></iframe>
-            </div>
+            <h3 class="text-xl font-semibold mb-2 text-blue-400">Send message</h3>
+            <form id="messageForm" class="flex flex-col space-y-4">
+                <textarea id="messageInput" rows="4" placeholder="..."
+                          class="p-2 bg-gray-700 text-white rounded"></textarea>
+                <button type="submit"
+                        class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition duration-300">
+                    Send message
+                </button>
+            </form>
         </div>
     </section>
 </main>
 
 <script src="https://amazon-connect.github.io/amazon-connect-streams/release/connect-streams.js"></script>
 <script th:inline="javascript">
-    // CCP URL dynamically passed from the server
     var ccpUrl = /*[[${ccpUrl}]]*/ 'defaultUrl';
-    console.log("CCP URL initialized:", ccpUrl);
 
-    function init() {
-        console.group("Initialization");
-        console.time("CCP Initialization Time");
+    try {
+        connect.core.initCCP(document.getElementById("containerDiv"), {
+            ccpUrl: ccpUrl,
+            loginPopup: true,
+            softphone: {
+                allowFramedSoftphone: true
+            }
+        });
 
-        try {
-            var containerDiv = document.getElementById("containerDiv");
-            console.log("Container for CCP found:", containerDiv);
+        connect.agent(function (agent) {
+            agent.onStateChange(function (agentState) {
+                console.log("Agent status:", agentState.newState);
+            });
+        });
 
-            // Initialize the Amazon Connect CCP
-            connect.core.initCCP(containerDiv, {
-                ccpUrl: ccpUrl, // REQUIRED
-                loginPopup: true, // Optional, defaults to true
-                loginPopupAutoClose: true, // Optional, defaults to false
-                loginOptions: { // Optional, opens login in a new window
-                    autoClose: true,
-                    height: 600,
-                    width: 400,
-                    top: 0,
-                    left: 0
-                },
-                region: "eu-central-1", // REQUIRED for CHAT functionality
-                softphone: { // Optional configuration for softphone
-                    allowFramedSoftphone: true,
-                    disableRingtone: false,
-                    ringtoneUrl: "[your-ringtone-filepath].mp3",
-                    allowFramedVideoCall: true,
-                },
-                task: {
-                    disableRingtone: false,
-                    ringtoneUrl: "[your-ringtone-filepath].mp3"
-                },
-                pageOptions: { // Optional UI settings
-                    enableAudioDeviceSettings: false,
-                    enableVideoDeviceSettings: false,
-                    enablePhoneTypeSettings: true
-                },
-                shouldAddNamespaceToLogs: false, // Optional, defaults to false
-                ccpAckTimeout: 5000, // Optional, defaults to 3000 ms
-                ccpSynTimeout: 3000, // Optional, defaults to 1000 ms
-                ccpLoadTimeout: 10000 // Optional, defaults to 5000 ms
+        connect.contact(function (contact) {
+            console.log("Contact:", contact);
+
+            contact.onConnected(function () {
+                console.log("Contact connected.");
+                sendMessageToAgent(contact, "Hello! This is a test message.");
             });
 
-            console.info("CCP successfully initialized.");
-        } catch (error) {
-            console.error("Error during CCP initialization:", error);
-        }
+            contact.onMessage(function (message) {
+                console.log("Received a message from the agent:", message)
+            });
 
-        console.timeEnd("CCP Initialization Time");
-        console.groupEnd();
+            contact.onEnded(function () {
+                console.log("Contact ended.");
+            });
+
+            const form = document.getElementById("messageForm");
+            form.addEventListener("submit", function (event) {
+                event.preventDefault();
+                const messageInput = document.getElementById("messageInput");
+                const message = messageInput.value.trim();
+
+                if (message) {
+                    sendMessageToAgent(contact, message);
+                    messageInput.value = "";
+                } else {
+                    alert("Enter a message before sending.");
+                }
+            });
+        });
+
+    } catch (e) {
+        console.error("Failed to initialize CCP:", e);
     }
 
-    function startChat() {
-        console.group("Start Chat");
-        console.time("Chat Initialization Time");
-
-        try {
-            var chatWidgetContainer = document.getElementById("chatWidgetContainer");
-            var chatWidget = document.getElementById("chatWidget");
-
-            if (!ccpUrl || ccpUrl === 'defaultUrl') {
-                throw new Error("Invalid or missing CCP URL.");
-            }
-
-            // Show the chat widget container
-            chatWidgetContainer.style.display = "block";
-            console.log("Chat widget container displayed.");
-
-            // Set the source URL for the chat widget iframe
-            var chatUrl = ccpUrl + "/chat"; // Ensure this URL is correctly configured in Amazon Connect
-            chatWidget.src = chatUrl;
-
-            console.info("Chat started at URL:", chatUrl);
-        } catch (error) {
-            console.error("Error during chat initialization:", error);
+    function sendMessageToAgent(contact, message) {
+        if (contact.isChat()) {
+            contact.sendMessage({
+                message: message,
+                contentType: "text/plain"
+            }, {
+                success: function () {
+                    console.log("Message sent:", message);
+                },
+                failure: function (error) {
+                    console.error("Error:", error);
+                }
+            });
+        } else {
+            console.warn("Contact does not support chat.");
         }
-
-        console.timeEnd("Chat Initialization Time");
-        console.groupEnd();
     }
 </script>
 
