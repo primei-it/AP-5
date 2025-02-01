@@ -70,6 +70,10 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: build-artifacts
+          path: build/libs
+
+      - name: Debug - Check if JAR exists
+        run: ls -l build/libs 
 
 ##TODO wrzucić variable ap-5 jako zmienna środowiskowa
       - name: URL Identify Docker image
