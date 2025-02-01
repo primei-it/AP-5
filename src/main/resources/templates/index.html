@@ -12,7 +12,6 @@
         <h1 class="text-3xl font-bold">AP-5 Project</h1>
     </div>
 </header>
-
 <main class="flex-grow container mx-auto mt-8 p-4">
     <section class="bg-gray-800 rounded-lg shadow-lg p-6">
         <h2 class="text-2xl font-semibold mb-4 text-blue-400">Hello! 👋</h2>
@@ -22,12 +21,11 @@
 
     <section class="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
         <div class="bg-gray-800 rounded-lg shadow-lg p-6">
-            <h3 class="text-xl font-semibold mb-2 text-blue-400">F 1</h3>
+            <h3 class="text-xl font-semibold mb-2 text-blue-400">AWS Connect</h3>
             <div id="containerDiv" style="width: 100%; height: 500px;"></div>
         </div>
     </section>
 </main>
-
 <script src="https://amazon-connect.github.io/amazon-connect-streams/release/connect-streams.js"></script>
 <script th:inline="javascript">
     var ccpUrl = /*[[${ccpUrl}]]*/ 'defaultUrl';
@@ -41,6 +39,13 @@
             }
         });
         console.log("CCP initialized successfully");
+
+        connect.agent(function (agent) {
+            agent.onStateChange(function (agentState) {
+                console.log("Agent status:", agentState.newState);
+            });
+        });
+
     } catch (e) {
         console.error("Failed to initialize CCP:", e);
     }
