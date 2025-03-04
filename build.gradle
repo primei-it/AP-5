@@ -56,7 +56,7 @@ dependencies {
     testImplementation 'io.rest-assured:rest-assured:5.5.0'
 
     testImplementation group: 'org.assertj', name: 'assertj-core', version: '3.27.2'
-    testImplementation group: 'org.mockito', name: 'mockito-core', version: '5.15.2'
+    testImplementation group: 'org.mockito', name: 'mockito-core', version: '5.16.0'
 }
 
 tasks.named('test') {
